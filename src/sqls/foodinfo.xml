@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.edu.foodinfo"> 
+	<select id="getFoodInfolist"
+	resultType="com.ssafy.edu.dto.FoodInfoDto">
+	SELECT FOOD_CODE,FOOD_NAME,FOOD_MAKER,FOOD_MATERIAL,FOOD_IMG
+	FROM FOODINFO
+	ORDER BY FOOD_CODE
+	</select>
+	<select id="getFoodInfoById"
+	parameterType="java.lang.Integer"
+	resultType="com.ssafy.edu.dto.FoodInfoDto">
+	SELECT FOOD_CODE,FOOD_NAME,FOOD_MAKER,FOOD_MATERIAL,FOOD_IMG
+	FROM FOODINFO
+	WHERE FOOD_CODE=#{food_code}
+	</select>
+	<select id="searchFood"
+	parameterType="java.util.Map"
+	resultType="com.ssafy.edu.dto.FoodInfoDto">
+	SELECT FOOD_CODE,FOOD_NAME,FOOD_MAKER,FOOD_MATERIAL,FOOD_IMG
+	FROM FOODINFO
+	WHERE 1=1
+	<if test="s_category != '' and s_category != null and s_keyword != '' and s_keyword != null">
+		<if test="s_category == 'name'">AND FOOD_NAME like concat('%',#{s_keyword},'%')</if>
+		<if test="s_category == 'maker'">AND FOOD_MAKER like concat('%',#{s_keyword},'%')</if>
+		<if test="s_category == 'material'">AND FOOD_MATERIAL like concat('%',#{s_keyword},'%')</if>
+	</if>
+	</select>
+	<select id="allergy"
+	parameterType="java.lang.Integer"
+	resultType="java.lang.String">
+	SELECT A.ALLERGY_NAME 
+	FROM ALLERGY A JOIN FOOD_ALLERGY F 
+	ON A.ALLERGY_CODE = F.ALLERGY_CODE 
+	WHERE F.FOOD_CODE = #{food_code}
+	</select>
+	
+	<insert id="addEat" parameterType="com.ssafy.edu.dto.EatDto">
+	INSERT INTO EAT_INFO(FOOD_CODE, USER_CODE,QUANTITY) 
+	VALUES(#{food_code},#{user_code},#{quantity})
+	</insert>
+	
+	<select id="getEatInfo" parameterType="java.lang.Integer" resultType="com.ssafy.edu.dto.EatDto">
+	SELECT F.FOOD_CODE, F.FOOD_NAME, F.FOOD_MAKER, F.FOOD_MATERIAL, F.FOOD_IMG, E.QUANTITY FROM EAT_INFO E JOIN FOODINFO F ON E.FOOD_CODE = F.FOOD_CODE  WHERE E.USER_CODE = #{user_code}
+	</select>
+	
+	<delete id="deleteEatInfo" parameterType="com.ssafy.edu.dto.EatDto">
+	DELETE FROM EAT_INFO WHERE USER_CODE = #{user_code} AND FOOD_CODE = #{food_code}
+	</delete>
+	
+	<update id="updateEatInfo" parameterType="com.ssafy.edu.dto.EatDto">
+	UPDATE EAT_INFO SET QUANTITY = #{quantity} WHERE USER_CODE = #{user_code} AND FOOD_CODE =#{food_code}
+	</update>
+	
+	<select id="checkEat" parameterType="com.ssafy.edu.dto.EatDto" resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM EAT_INFO WHERE FOOD_CODE= #{food_code} AND USER_CODE =#{user_code}
+	</select>
+	
+	<select id="eatcal"
+	parameterType="java.lang.Integer"
+	resultType="com.ssafy.edu.dto.FoodDetailDto">
+	select sum(f.calorie*e.quantity) as calorie, sum(f.carbohydrate*e.quantity) as carbohydrate, sum(f.protein*e.quantity) as protein, sum(f.fat*e.quantity) as fat, sum(f.salt*e.quantity) as salt
+	from eat_info e, foodnutrition f 
+	where e.food_code=f.food_code and e.user_code=#{user_code}
+	</select>
+	
+	
+	
+</mapper>

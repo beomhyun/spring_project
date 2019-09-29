@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.edu.foodnutrition">
+	
+	<select id="selectnutrition"
+	parameterType="java.lang.Integer"
+	resultType="com.ssafy.edu.dto.FoodDetailDto">
+	SELECT FOOD_CODE,DAILY,CALORIE,CARBOHYDRATE,PROTEIN,FAT,SUGARS,SALT,CHOLESTEROL,FATTY_ACID,TRANS_FAT
+	FROM FOODNUTRITION
+	WHERE FOOD_CODE=#{food_code}
+	</select>
+	
+	
+	
+	
+</mapper> 
